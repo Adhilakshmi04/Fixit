@@ -1,0 +1,6 @@
+@FixitAPI_HostAddress = http://localhost:5204
+
+GET {{FixitAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
