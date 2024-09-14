@@ -19,6 +19,7 @@ public class ServiceController : ControllerBase
     {
         if (ModelState.IsValid)
         {
+           
             var employee = new Employee
             {
                 FirstName = employeeDto.FirstName,
@@ -30,47 +31,43 @@ public class ServiceController : ControllerBase
                 City = employeeDto.City,
                 State = employeeDto.State,
                 PhoneNumber = employeeDto.PhoneNumber,
-                 Role = string.Join(",", employeeDto.Roles)
+                Role = string.Join(",", employeeDto.Roles) 
             };
 
-         
+            
             _context.Employees.Add(employee);
             _context.SaveChanges();
 
-
+            
             foreach (var roleName in employeeDto.Roles)
             {
-
+               
                 var role = _context.Roles.FirstOrDefault(r => r.RoleName == roleName);
                 if (role != null)
                 {
-              
-                    foreach (var serviceId in employeeDto.ServiceIds)
-                    {
                     
-                        var service = _context.Services.FirstOrDefault(s => s.Id == serviceId && s.RoleId == role.Id);
-                        if (service != null)
+                    var servicesForRole = _context.Services.Where(s => s.RoleId == role.Id).ToList();      
+                    foreach (var service in servicesForRole)
+                    {                   
+                        var employeeService = new EmployeeService
                         {
-                            var employeeService = new EmployeeService
-                            {
-                                EmployeeId = employee.Id,
-                                ServiceId = serviceId
-                            };
+                            EmployeeId = employee.Id,  
+                            ServiceId = service.Id    
+                        };
 
-                            _context.EmployeeServices.Add(employeeService);
-                        }
+                        
+                        _context.EmployeeServices.Add(employeeService);
                     }
                 }
             }
-
-      
             _context.SaveChanges();
 
-            return Ok(new { message = "Employee details saved successfully!" });
+            return Ok(new { message = "Employee details saved successfully with associated services!" });
         }
 
         return BadRequest(ModelState);
     }
+
 
 
     [HttpPut("UpdateEmployeeDetails")]
