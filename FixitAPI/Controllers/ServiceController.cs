@@ -80,7 +80,7 @@ public class ServiceController : ControllerBase
             }
             employee.FirstName = employeeDto.FirstName ?? employee.FirstName;
             employee.LastName = employeeDto.LastName ?? employee.LastName;
-            employee.Age = employeeDto.Age ?? employee.Age;  // Ensure to handle nullable values
+            employee.Age = employeeDto.Age ?? employee.Age;  
             employee.Gender = employeeDto.Gender ?? employee.Gender;
             employee.Email = employeeDto.Email ?? employee.Email;
             employee.Address = employeeDto.Address ?? employee.Address;

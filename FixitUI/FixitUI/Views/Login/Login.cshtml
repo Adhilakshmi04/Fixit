@@ -3,6 +3,7 @@
 }
 
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,26 +20,26 @@
                     <h1 class="mb-4 " style="font-family: Inknut Antiqua;color:black;font-weight:800;size:46.67px;">Fixit</h1>
                 </div>
                 <p class="mb-2 welsty">Welcome to Fixit</p>
-                <p class="mb-4" style="font-family: Poppins;font-size:18px;">New Here ?</p>
-                <button class="btn btn-lg" style="font-family:Mukta Malar;color: white;background-color: #10347280;font-size: 18px !important;">SIGN UP</button>
+                <p class="mb-4" style="font-family: Poppins;font-size:18px;">New Here?</p>
+                <button class="btn btn-lg" style="font-family:Mukta Malar;color: white;background-color: #10347280;font-size: 18px !important;" onclick="location.href='signup.html'">SIGN UP</button>
             </div>
             <div class="col-md-4 offset-md-2.8">
                 <div class="card p-4" style="background-color: #d7dbff;">
                     <h2 class="text-start mb-5 signin" style="text-align:center !important;">Sign In</h2>
-                    <form>
+                    <form id="loginForm">
                         <div class="mb-5">
                             <input type="text" class="form-control" id="username" placeholder="    Username">
                         </div>
                         <div class="mb-4">
                             <input type="password" class="form-control" id="password" placeholder="   Password">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block" style="font-family: Mukta Malar; font-size:18px;">Sign In</button>
+                        <button type="button" class="btn btn-primary btn-block" style="font-family: Mukta Malar; font-size:18px;" onclick="login()">Sign In</button>
                         <p class="text-center mt-3"><a href="#">Forget your password?</a></p>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
+    <script src="js/login.js"></script>
 </body>
 </html>

@@ -1,9 +1,11 @@
 ﻿using FixitAPI.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FixitAPI.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -17,6 +19,8 @@ namespace FixitAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); // Ensure Identity tables are created
+
             // Defining the many-to-many relationship between Employees and Services
             modelBuilder.Entity<EmployeeService>()
                 .HasKey(es => new { es.EmployeeId, es.ServiceId });
