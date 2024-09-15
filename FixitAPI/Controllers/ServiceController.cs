@@ -18,13 +18,12 @@ public class ServiceController : ControllerBase
     public IActionResult SaveEmployeeDetails([FromBody] EmployeeDto employeeDto)
     {
         if (ModelState.IsValid)
-        {
-           
+        {           
             var employee = new Employee
             {
                 FirstName = employeeDto.FirstName,
                 LastName = employeeDto.LastName,
-                Age = employeeDto.Age,
+                Age = employeeDto.Age ?? 0,  
                 Gender = employeeDto.Gender,
                 Email = employeeDto.Email,
                 Address = employeeDto.Address,
@@ -32,35 +31,31 @@ public class ServiceController : ControllerBase
                 State = employeeDto.State,
                 PhoneNumber = employeeDto.PhoneNumber,
                 Role = string.Join(",", employeeDto.Roles),
-                Experience = employeeDto.Experience
+                Experience = employeeDto.Experience?.ToString() ?? "0"  
             };
-
             
             _context.Employees.Add(employee);
             _context.SaveChanges();
-
             
             foreach (var roleName in employeeDto.Roles)
             {
-               
                 var role = _context.Roles.FirstOrDefault(r => r.RoleName == roleName);
                 if (role != null)
                 {
-                    
-                    var servicesForRole = _context.Services.Where(s => s.RoleId == role.Id).ToList();      
+                    var servicesForRole = _context.Services.Where(s => s.RoleId == role.Id).ToList();
                     foreach (var service in servicesForRole)
-                    {                   
+                    {
                         var employeeService = new EmployeeService
                         {
-                            EmployeeId = employee.Id,  
-                            ServiceId = service.Id    
+                            EmployeeId = employee.Id,
+                            ServiceId = service.Id
                         };
 
-                        
                         _context.EmployeeServices.Add(employeeService);
                     }
                 }
             }
+            
             _context.SaveChanges();
 
             return Ok(new { message = "Employee details saved successfully with associated services!" });
@@ -71,51 +66,49 @@ public class ServiceController : ControllerBase
 
 
 
+
     [HttpPut("UpdateEmployeeDetails")]
     public IActionResult UpdateEmployeeDetails(int id, [FromBody] EmployeeDto employeeDto)
     {
         if (ModelState.IsValid)
-        {
-            // Find the existing employee record by Id
+        {           
             var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
 
             if (employee == null)
             {
                 return NotFound(new { message = "Employee not found." });
             }
-
-     
-            employee.FirstName = employeeDto.FirstName;
-            employee.LastName = employeeDto.LastName;
-            employee.Age = employeeDto.Age;
-            employee.Gender = employeeDto.Gender;
-            employee.Email = employeeDto.Email;
-            employee.Address = employeeDto.Address;
-            employee.City = employeeDto.City;
-            employee.State = employeeDto.State;
-            employee.PhoneNumber = employeeDto.PhoneNumber;
+            employee.FirstName = employeeDto.FirstName ?? employee.FirstName;
+            employee.LastName = employeeDto.LastName ?? employee.LastName;
+            employee.Age = employeeDto.Age ?? employee.Age;  
+            employee.Gender = employeeDto.Gender ?? employee.Gender;
+            employee.Email = employeeDto.Email ?? employee.Email;
+            employee.Address = employeeDto.Address ?? employee.Address;
+            employee.City = employeeDto.City ?? employee.City;
+            employee.State = employeeDto.State ?? employee.State;
+            employee.PhoneNumber = employeeDto.PhoneNumber ?? employee.PhoneNumber;
             employee.Role = string.Join(",", employeeDto.Roles);
-            employee.Experience = employeeDto.Experience;
-
+            employee.Experience = employeeDto.Experience.HasValue ? employeeDto.Experience.Value.ToString() : employee.Experience;
 
 
             var existingEmployeeServices = _context.EmployeeServices.Where(es => es.EmployeeId == employee.Id).ToList();
             _context.EmployeeServices.RemoveRange(existingEmployeeServices);
 
-            foreach (var roleName in employeeDto.Roles)
+            
+            if (employeeDto.Roles != null)
             {
-                var role = _context.Roles.FirstOrDefault(r => r.RoleName == roleName);
-                if (role != null)
+                foreach (var roleName in employeeDto.Roles)
                 {
-                    foreach (var serviceId in employeeDto.ServiceIds)
+                    var role = _context.Roles.FirstOrDefault(r => r.RoleName == roleName);
+                    if (role != null)
                     {
-                        var service = _context.Services.FirstOrDefault(s => s.Id == serviceId && s.RoleId == role.Id);
-                        if (service != null)
+                        var servicesForRole = _context.Services.Where(s => s.RoleId == role.Id).ToList();
+                        foreach (var service in servicesForRole)
                         {
                             var employeeService = new EmployeeService
                             {
                                 EmployeeId = employee.Id,
-                                ServiceId = serviceId
+                                ServiceId = service.Id
                             };
                             _context.EmployeeServices.Add(employeeService);
                         }
@@ -123,7 +116,7 @@ public class ServiceController : ControllerBase
                 }
             }
 
-            // Save the updated employee and services
+           
             _context.SaveChanges();
 
             return Ok(new { message = "Employee details updated successfully!" });

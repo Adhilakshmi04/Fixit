@@ -33,7 +33,7 @@ namespace FixitAPI.Controllers
 
             if (result.Succeeded)
             {
-                //await _userManager.AddToRoleAsync(user, "User");
+                
                 return Ok(new { message = "User registered successfully" });
             }
 
