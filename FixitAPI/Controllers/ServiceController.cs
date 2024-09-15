@@ -31,7 +31,8 @@ public class ServiceController : ControllerBase
                 City = employeeDto.City,
                 State = employeeDto.State,
                 PhoneNumber = employeeDto.PhoneNumber,
-                Role = string.Join(",", employeeDto.Roles) 
+                Role = string.Join(",", employeeDto.Roles),
+                Experience = employeeDto.Experience
             };
 
             
@@ -94,8 +95,10 @@ public class ServiceController : ControllerBase
             employee.State = employeeDto.State;
             employee.PhoneNumber = employeeDto.PhoneNumber;
             employee.Role = string.Join(",", employeeDto.Roles);
+            employee.Experience = employeeDto.Experience;
 
-     
+
+
             var existingEmployeeServices = _context.EmployeeServices.Where(es => es.EmployeeId == employee.Id).ToList();
             _context.EmployeeServices.RemoveRange(existingEmployeeServices);
 
@@ -178,5 +181,39 @@ public class ServiceController : ControllerBase
 
         return Ok(matchingEmployees);
     }
+
+    [HttpPost("SaveRoles")]
+    public IActionResult SaveRoles([FromBody] RoleServiceDto roleServiceDto)
+    {
+        
+        var existingRole = _context.Roles.FirstOrDefault(r => r.RoleName == roleServiceDto.RoleName);
+
+        if (existingRole != null)
+        {
+            return BadRequest("Role already exists.");
+        }
+       
+        var newRole = new Role
+        {
+            RoleName = roleServiceDto.RoleName
+        };
+        
+        _context.Roles.Add(newRole);
+        _context.SaveChanges();  
+        var roleId = newRole.Id;        
+        foreach (var serviceName in roleServiceDto.ServiceNames)
+        {
+            var service = new Service
+            {
+                ServiceName = serviceName,
+                RoleId = roleId  
+            };
+            _context.Services.Add(service);
+        }
+        _context.SaveChanges();
+
+        return Ok(new { message = "Role and services saved successfully!" });
+    }
+
 }
 

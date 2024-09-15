@@ -13,6 +13,7 @@
         public string State { get; set; }
         public string PhoneNumber { get; set; }
         public string Role { get; set; }
+        public string Experience { get; set; }
         public ICollection<EmployeeService> EmployeeServices { get; set; }
     }
 }
